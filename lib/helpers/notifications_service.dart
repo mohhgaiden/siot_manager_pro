@@ -1,9 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
   await NotificationsService.instance.setupFlutterNotifications();
   await NotificationsService.instance.showNotification(message);
 }
@@ -18,13 +19,11 @@ class NotificationsService {
 
   Future<void> initialize() async {
     await requestPermission();
+    await setupFlutterNotifications();
     await setupMessageHandlers();
-    //final token = await messaging.getToken();
-    //print('FCM TOKEN: $token');
   }
 
   Future<void> requestPermission() async {
-    //final setting =
     await messaging.requestPermission(
       alert: true,
       badge: true,
@@ -34,41 +33,39 @@ class NotificationsService {
       carPlay: false,
       criticalAlert: false,
     );
-    //print('Permission status: ${setting.authorizationStatus}');
   }
 
   Future<void> setupFlutterNotifications() async {
-    if (isLocalNotificationsInitialized) {
-      return;
-    }
+  if (isLocalNotificationsInitialized) return;
 
-    const channel = AndroidNotificationChannel(
-      'high_importance_channel',
-      'High Importance Notifications',
-      description: '',
-      importance: Importance.high,
-    );
+  const channel = AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: '',
+    importance: Importance.high,
+  );
 
-    await localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+  final androidPlugin = localNotifications
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+  await androidPlugin?.createNotificationChannel(channel);
 
-    const initializationSetting = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    );
+  const initializationSetting = InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    iOS: DarwinInitializationSettings(),
+  );
 
-    await localNotifications.initialize(
-      initializationSetting,
-      onDidReceiveNotificationResponse: (details) {},
-    );
+  await localNotifications.initialize(
+    initializationSetting,
+    onDidReceiveNotificationResponse: (details) {},
+  );
 
-    isLocalNotificationsInitialized = true;
-  }
+  isLocalNotificationsInitialized = true;
+}
 
   Future<void> showNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
+
     if (notification != null && android != null) {
       await localNotifications.show(
         notification.hashCode,
@@ -76,8 +73,8 @@ class NotificationsService {
         notification.body,
         const NotificationDetails(
           android: AndroidNotificationDetails(
-            'high_important_channel',
-            'High Important Notification',
+            'high_importance_channel',
+            'High Importance Notifications',
             channelDescription:
                 'This channel is used for important notifications.',
             importance: Importance.high,
@@ -91,11 +88,9 @@ class NotificationsService {
   }
 
   Future<void> setupMessageHandlers() async {
-    FirebaseMessaging.onMessage.listen(
-      (message) {
-        showNotification(message);
-      },
-    );
+    FirebaseMessaging.onMessage.listen((message) {
+      showNotification(message);
+    });
 
     FirebaseMessaging.onMessageOpenedApp.listen(handleBackgroundMessage);
 
