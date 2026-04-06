@@ -1,0 +1,50 @@
+name: siot_manager_pro
+description: S-IOT Driver - Sensor Monitoring App
+publish_to: 'none'
+
+version: 1.0.0+2
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.68.0
+  intl: ^0.19.0
+  http: ^1.6.0
+  hive_flutter: ^1.1.0
+  get: ^4.7.3
+  calendar_date_picker2: ^2.0.1
+  pdf: ^3.10.7
+  printing: ^5.12.0
+  path_provider: ^2.1.2
+  open_file: ^3.5.11
+  animated_splash_screen: ^1.3.0
+  url_launcher: ^6.3.2
+  firebase_core: ^3.15.1
+  firebase_messaging: ^15.2.9
+  flutter_local_notifications: ^19.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/login/logo.png"
+  
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/login/
+    - assets/images/home/
+    
+  fonts:
+    - family: RobotoThin
+      fonts:
+        - asset: assets/fonts/Roboto-Thin.ttf

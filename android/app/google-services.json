@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "743230902279",
+    "project_id": "viclient-store",
+    "storage_bucket": "viclient-store.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743230902279:android:4d6398697209f7d47c1aa2",
+        "android_client_info": {
+          "package_name": "com.siriusnet.siot.manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_MKQ-wOVjoSX3nLxGUvudWqG4irxdvY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743230902279:android:d49b7e167ce7e4b77c1aa2",
+        "android_client_info": {
+          "package_name": "com.siriusnet.vcs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_MKQ-wOVjoSX3nLxGUvudWqG4irxdvY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
