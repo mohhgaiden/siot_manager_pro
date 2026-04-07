@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../controller/auth.dart';
+import '../../../helpers/notifications_service.dart';
 import '../../theme/app_theme.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +21,10 @@ class _LoginScreenState extends State<LoginScreen> {
       authController.user.value.text = Hive.box('username').getAt(0)['user'];
       authController.password.value.text = Hive.box('username').get(0)['pass'];
     }
+    // Request notification permission after UI is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await NotificationsService.instance.requestPermission();
+    });
     super.initState();
   }
 
@@ -213,10 +220,31 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             // ─── Footer ───────────────────────────────────────────────────
+            /*
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Développé par Sirius NET'),
-            ),
+              child: Text('© 2026 Développé par Sirius NET'),
+            ),*/
+            Padding(
+  padding: const EdgeInsets.only(bottom: 10),
+  child: GestureDetector(
+    onTap: () async {
+      final url = Uri.parse('https://www.sirius-net.dz');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+    },
+    child: const Text(
+      '© 2026 Développé par Sirius NET',
+      style: TextStyle(
+        fontSize: 12,
+        color: AppTheme.primary,
+        decoration: TextDecoration.underline,
+        decorationColor: AppTheme.primary,
+      ),
+    ),
+  ),
+),
           ],
         ),
       ),

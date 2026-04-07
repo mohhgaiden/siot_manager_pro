@@ -30,7 +30,7 @@ class AuthController extends GetxController {
       final response = await authService.login({
         "username": user.value.text.trim(),
         "password": password.value.text.trim(),
-        "fcm_token": token,
+        "fcm_token": token ?? "",
       });
 
       final loginData = response['LOGGED_IN_MANAGER'];
