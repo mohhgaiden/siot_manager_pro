@@ -18,13 +18,6 @@ import flutter_local_notifications
         UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
       }  
     GeneratedPluginRegistrant.register(with: self)
-    // Set navigation bar (home indicator area) to white
-    if #available(iOS 15.0, *) {
-      let appearance = UINavigationBarAppearance()
-      appearance.backgroundColor = UIColor.white
-      UINavigationBar.appearance().standardAppearance = appearance
-      UINavigationBar.appearance().scrollEdgeAppearance = appearance
-    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

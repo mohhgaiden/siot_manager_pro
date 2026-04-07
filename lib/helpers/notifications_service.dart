@@ -18,7 +18,6 @@ class NotificationsService {
   bool isLocalNotificationsInitialized = false;
 
   Future<void> initialize() async {
-    await requestPermission();
     await setupFlutterNotifications();
     await setupMessageHandlers();
   }
@@ -36,31 +35,32 @@ class NotificationsService {
   }
 
   Future<void> setupFlutterNotifications() async {
-  if (isLocalNotificationsInitialized) return;
+    if (isLocalNotificationsInitialized) return;
 
-  const channel = AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
-    description: '',
-    importance: Importance.high,
-  );
+    const channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: '',
+      importance: Importance.high,
+    );
 
-  final androidPlugin = localNotifications
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-  await androidPlugin?.createNotificationChannel(channel);
+    final androidPlugin = localNotifications
+        .resolvePlatformSpecificImplementation
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.createNotificationChannel(channel);
 
-  const initializationSetting = InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    iOS: DarwinInitializationSettings(),
-  );
+    const initializationSetting = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
+    );
 
-  await localNotifications.initialize(
-    initializationSetting,
-    onDidReceiveNotificationResponse: (details) {},
-  );
+    await localNotifications.initialize(
+      initializationSetting,
+      onDidReceiveNotificationResponse: (details) {},
+    );
 
-  isLocalNotificationsInitialized = true;
-}
+    isLocalNotificationsInitialized = true;
+  }
 
   Future<void> showNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
