@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'helpers/notifications_service.dart';
 import 'screens/login/intro_screen.dart';
 import 'theme/app_theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
