@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../../controller/auth.dart';
-import '../../theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../controller/auth.dart';
+import '../../../helpers/notifications_service.dart';
+import '../../theme/app_theme.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -20,6 +21,10 @@ class _LoginScreenState extends State<LoginScreen> {
       authController.user.value.text = Hive.box('username').getAt(0)['user'];
       authController.password.value.text = Hive.box('username').get(0)['pass'];
     }
+    // Request notification permission after UI is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await NotificationsService.instance.requestPermission();
+    });
     super.initState();
   }
 
