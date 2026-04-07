@@ -25,12 +25,31 @@ class AuthController extends GetxController {
   Future<void> login() async {
     isLoading.value = true;
     try {
-      String? token = await FirebaseMessaging.instance.getToken();
+      // Get FCM token safely for iOS
+      String? token;
+      try {
+        if (GetPlatform.isIOS) {
+          // Wait for APNs token first
+          String? apnsToken;
+          int retries = 0;
+          while (apnsToken == null && retries < 5) {
+            apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+            if (apnsToken == null) {
+              await Future.delayed(const Duration(seconds: 2));
+              retries++;
+            }
+          }
+        }
+        token = await FirebaseMessaging.instance.getToken();
+      } catch (e) {
+        // Continue login even if FCM token fails
+        token = null;
+      }
       await Future.delayed(const Duration(seconds: 1));
       final response = await authService.login({
         "username": user.value.text.trim(),
         "password": password.value.text.trim(),
-        "fcm_token": token,
+        "fcm_token": token ?? "",
       });
 
       final loginData = response['LOGGED_IN_MANAGER'];

@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../controller/auth.dart';
 import '../../theme/app_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -213,10 +215,31 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             // ─── Footer ───────────────────────────────────────────────────
+            /*
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Développé par Sirius NET'),
-            ),
+              child: Text('© 2026 Développé par Sirius NET'),
+            ),*/
+            Padding(
+  padding: const EdgeInsets.only(bottom: 10),
+  child: GestureDetector(
+    onTap: () async {
+      final url = Uri.parse('https://www.sirius-net.dz');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+    },
+    child: const Text(
+      '© 2026 Développé par Sirius NET',
+      style: TextStyle(
+        fontSize: 12,
+        color: AppTheme.primary,
+        decoration: TextDecoration.underline,
+        decorationColor: AppTheme.primary,
+      ),
+    ),
+  ),
+),
           ],
         ),
       ),
