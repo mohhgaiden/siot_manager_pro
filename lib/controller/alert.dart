@@ -45,18 +45,21 @@ class AlertController extends GetxController {
   Future<void> getAlerts({bool clear = true}) async {
     if (clear) offset.value = 1;
     if (clear) alerts.clear();
+
     await _run(() async {
       final response = await alertService.fetchAlert(
         type: type.value,
         page: offset.value,
         {'uuid_manager': _uuid},
       );
+
       dynamic result;
       if (type.value == 0) {
         result = response['DATA_ALERTES_TEMPERATUR'];
       } else {
         result = response['DATA_ALERTES_HUMIDITY'];
       }
+
       final isSuccess =
           result['error'] == 'false' && result['connection_established'] == 1;
 
@@ -69,11 +72,23 @@ class AlertController extends GetxController {
         return;
       }
 
-      final fetched =
-          (result['LIST'] as List).map((e) => AlertModel.fromJson(e)).toList();
+      // 🔥 SAFE LIST CHECK
+      final list = result['LIST'];
 
-      alerts.value += fetched;
-      total.value = result['total_pages'];
+      if (list == null || list is! List || list.isEmpty) {
+        print("⚠️ Empty alerts list");
+
+        // stop pagination
+        total.value = offset.value;
+
+        return;
+      }
+
+      final fetched = list.map((e) => AlertModel.fromJson(e)).toList();
+
+      alerts.addAll(fetched);
+
+      total.value = result['total_pages'] ?? 0;
       offset.value++;
     });
   }

@@ -39,8 +39,10 @@ class ReportController extends GetxController {
 
   Future<void> getReports(String spaceId) async {
     isLoading.value = true;
+
     try {
       await Future.delayed(const Duration(seconds: 1));
+
       final response = await reportService.fetchReport({
         'uuid_manager': Hive.box('login').getAt(0)['uuid_manager'],
         'space_uuid': spaceId,
@@ -50,27 +52,68 @@ class ReportController extends GetxController {
 
       final result = response['DATA_SPACE_REPORT'];
 
+      if (result == null) {
+        print("❌ DATA_SPACE_REPORT is null");
+
+        // clear everything
+        reports.clear();
+        mesures.value = 0;
+        alerts.value = 0;
+        tags.value = 0;
+        uptime.value = 0;
+
+        return;
+      }
+
       print(result);
 
       final isSuccess =
           result['error'] == 'false' && result['connection_established'] == 1;
 
       if (!isSuccess) {
-        // ✅ Show failure and stop
         Get.snackbar('Échec de connexion', result['message']);
+
+        // 🔥 clear stale data
+        reports.clear();
+        mesures.value = 0;
+        alerts.value = 0;
+        tags.value = 0;
+        uptime.value = 0;
+
         return;
       }
+
+      // ✅ SAFE LIST CHECK
+      final list = result['LIST'];
+
+      if (list == null || list is! List || list.isEmpty) {
+        print("⚠️ Reports LIST is empty");
+
+        reports.clear();
+
+        // still keep stats if backend sends them
+        mesures.value = result["total_mesures"] ?? 0;
+        alerts.value = result["nb_alertes"] ?? 0;
+        tags.value = result["actif_tags"] ?? 0;
+        uptime.value = result["uptime"] ?? 0;
+
+        return;
+      }
+
+      final fetched = list.map((e) => ReportModel.fromJson(e)).toList();
+
+      // ✅ assign data
+      reports.assignAll(fetched);
 
       mesures.value = result["total_mesures"] ?? 0;
       alerts.value = result["nb_alertes"] ?? 0;
       tags.value = result["actif_tags"] ?? 0;
       uptime.value = result["uptime"] ?? 0;
-
-      reports.assignAll(
-        (result["LIST"] as List).map((e) => ReportModel.fromJson(e)).toList(),
-      );
     } catch (e) {
       Get.snackbar('Erreur', e.toString());
+
+      // 🔥 safety reset
+      reports.clear();
     } finally {
       isLoading.value = false;
     }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -400,11 +401,17 @@ class ReportScreen extends StatelessWidget {
             Icons.check_circle_outline,
           ),
           _statCard(
+            'Dernière maj',
+            DateFormat('HH:mm').format(DateTime.now()),
+            AppTheme.blue,
+            Icons.access_time,
+          ),
+          /*_statCard(
             'Uptime',
             '${reportController.uptime.value.toStringAsFixed(1)}%',
             AppTheme.blue,
             Icons.trending_up,
-          ),
+          ),*/
         ],
       ),
     );

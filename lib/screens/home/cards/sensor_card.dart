@@ -135,17 +135,23 @@ class SensorCard extends StatelessWidget {
                               Container(
                                 width: 6,
                                 height: 6,
-                                decoration: const BoxDecoration(
-                                  color: AppTheme.green,
+                                decoration: BoxDecoration(
+                                  color:
+                                      sensor.isLive
+                                          ? AppTheme.green
+                                          : Colors.red,
                                   shape: BoxShape.circle,
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text(
-                                'En direct',
+                              Text(
+                                sensor.isLive ? 'En direct' : 'Hors ligne',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: AppTheme.textMuted,
+                                  color:
+                                      sensor.isLive
+                                          ? AppTheme.textMuted
+                                          : Colors.red,
                                 ),
                               ),
                             ],

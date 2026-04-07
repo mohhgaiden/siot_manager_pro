@@ -94,6 +94,7 @@ class HistoryController extends GetxController {
   Future<void> getHistory(String mac, {bool clear = true}) async {
     if (clear) offset.value = 1;
     if (clear) history.clear();
+
     await _run(() async {
       final response = await historyService.fetchHistory(
         type: periodIndex.value,
@@ -107,7 +108,14 @@ class HistoryController extends GetxController {
               Hive.box('login').getAt(0)['manager_delay_recordings'],
         },
       );
+
       final result = response['DATA_TAGS_DAY'];
+
+      if (result == null) {
+        print("❌ DATA_TAGS_DAY is null");
+        return;
+      }
+
       final isSuccess =
           result['error'] == 'false' && result['connection_established'] == 1;
 
@@ -120,13 +128,24 @@ class HistoryController extends GetxController {
         return;
       }
 
-      print(result);
+      // 🔥 SAFE LIST CHECK
+      final list = result['LIST'];
 
-      final fetched =
-          (result['LIST'] as List).map((e) => SensorModel.fromJson(e)).toList();
+      if (list == null || list is! List || list.isEmpty) {
+        print("⚠️ History LIST is empty");
 
-      history.value += fetched;
-      total.value = result['Nbr_registration'];
+        // stop pagination
+        total.value = history.length;
+
+        return;
+      }
+
+      final fetched = list.map((e) => SensorModel.fromJson(e)).toList();
+
+      history.addAll(fetched);
+
+      total.value = result['Nbr_registration'] ?? history.length;
+
       offset.value++;
     });
   }

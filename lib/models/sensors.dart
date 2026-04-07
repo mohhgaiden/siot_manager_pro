@@ -16,6 +16,8 @@ class SensorModel {
 
   final DateTime dateTime;
 
+  final bool isLive;
+
   SensorModel({
     required this.mac,
     required this.name,
@@ -30,6 +32,7 @@ class SensorModel {
     required this.latitude,
     required this.longitude,
     required this.dateTime,
+    required this.isLive,
   });
 
   factory SensorModel.fromJson(Map<String, dynamic> json) {
@@ -61,6 +64,8 @@ class SensorModel {
       longitude: (json['longitude'] ?? 0).toDouble(),
 
       dateTime: parsedDate,
+
+      isLive: DateTime.now().difference(parsedDate).inMinutes < 30,
     );
   }
 

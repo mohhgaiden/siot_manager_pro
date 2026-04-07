@@ -43,46 +43,66 @@ class ChartController extends GetxController {
 
   Future<void> getChart(String? mac) async {
     await _run(() async {
+      Map<String, dynamic> response;
+
       if (mac != null) {
-        final response = await chartService.chartTags({
+        response = await chartService.chartTags({
           'uuid_manager': _uuid,
           'MacAddrs': mac,
           'nb_days': _periodDays[periodIndex.value].toString(),
         });
-        final list = response['DATA_TAGS_GRAPH']?['LIST'] as List?;
-
-        if (list == null) return;
-
-        final fetched =
-            list.map((e) => SensorModel.fromJson(e)).toList()
-              ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-
-        raw.assignAll(fetched);
-        _buildSpots();
       } else {
-        final response = await chartService.chartAll({
+        response = await chartService.chartAll({
           'uuid_manager': _uuid,
           'space_uuid':
               homeController.rooms
-                  .where(
+                  .firstWhere(
                     (e) => e.spaceName == homeController.selectedSpace.value,
                   )
-                  .first
                   .spaceUuid,
           'nb_days': _periodDays[periodIndex.value].toString(),
         });
-
-        final list = response['DATA_SPACE_GRAPH']?['LIST'] as List?;
-        if (list == null) return;
-
-        final fetched =
-            list.map((e) => SensorModel.fromJson(e)).toList()
-              ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-
-        raw.assignAll(fetched);
-        _buildSpots();
       }
+
+      // 🔥 unify source
+      final data =
+          mac != null
+              ? response['DATA_TAGS_GRAPH']
+              : response['DATA_SPACE_GRAPH'];
+
+      final list = data?['LIST'];
+
+      // ✅ SAFE CHECK
+      if (list == null || list is! List || list.isEmpty) {
+        print("⚠️ Chart LIST is empty");
+
+        raw.clear();
+        _clearSpots(); // 🔥 important (see below)
+
+        return;
+      }
+
+      // ✅ parse safely
+      final fetched =
+          list.map((e) => SensorModel.fromJson(e)).toList()
+            ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+
+      raw.assignAll(fetched);
+
+      _buildSpots();
     });
+  }
+
+  void _clearSpots() {
+    tempSpots.clear();
+    humSpots.clear();
+    luxSpots.clear();
+    co2Spots.clear();
+
+    avgTemp.value = 0;
+    avgHum.value = 0;
+    avgLux.value = 0;
+    avgCo2.value = 0;
   }
 
   // ─── Spot builder ─────────────────────────────────────────────────────────

@@ -113,8 +113,10 @@ class HomeController extends GetxController {
 
   Future<void> getSensors(String spaceId) async {
     isLoading.value = true;
+
     try {
       await Future.delayed(const Duration(seconds: 1));
+
       final response = await sensorService.fetchSensors({
         'uuid_manager': Hive.box('login').getAt(0)['uuid_manager'],
         'space_uuid': spaceId,
@@ -122,20 +124,38 @@ class HomeController extends GetxController {
 
       final result = response['DATA_TAGS'];
 
+      if (result == null) {
+        print("❌ DATA_TAGS is null");
+        sensors.clear();
+        return;
+      }
+
       final isSuccess =
           result['error'] == 'false' && result['connection_established'] == 1;
 
       if (!isSuccess) {
-        // ✅ Show failure and stop
         Get.snackbar('Échec de connexion', result['message']);
+        sensors.clear(); // 🔥 avoid showing old data
         return;
       }
 
-      sensors.assignAll(
-        (result["LIST"] as List).map((e) => SensorModel.fromJson(e)).toList(),
-      );
+      // 🔥 SAFE LIST CHECK
+      final list = result['LIST'];
+
+      if (list == null || list is! List || list.isEmpty) {
+        print("⚠️ Sensors LIST is empty");
+
+        sensors.clear(); // 🔥 important
+
+        return;
+      }
+
+      final fetched = list.map((e) => SensorModel.fromJson(e)).toList();
+
+      sensors.assignAll(fetched);
     } catch (e) {
       Get.snackbar('Erreur', e.toString());
+      sensors.clear(); // 🔥 safety
     } finally {
       isLoading.value = false;
     }

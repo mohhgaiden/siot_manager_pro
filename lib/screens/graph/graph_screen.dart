@@ -8,6 +8,7 @@ import 'card/graph_card.dart';
 import 'card/period_graph.dart';
 import 'card/state_row.dart';
 
+/*
 class GraphScreen extends StatelessWidget {
   final SensorModel? sensor;
   const GraphScreen({super.key, required this.sensor});
@@ -24,6 +25,38 @@ class GraphScreen extends StatelessWidget {
         child: Column(
           children: [
             if (sensor != null) _buildHeader(context),
+            Expanded(child: _buildContent()),
+          ],
+        ),
+      ),
+    );
+  }*/
+class GraphScreen extends StatefulWidget {
+  final SensorModel? sensor;
+
+  const GraphScreen({super.key, required this.sensor});
+
+  @override
+  State<GraphScreen> createState() => _GraphScreenState();
+}
+
+class _GraphScreenState extends State<GraphScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ CALL ONLY ONCE
+    chartController.getChart(widget.sensor?.mac);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (widget.sensor != null) _buildHeader(context),
             Expanded(child: _buildContent()),
           ],
         ),
@@ -61,7 +94,7 @@ class GraphScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  sensor!.name,
+                  widget.sensor!.name,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -69,7 +102,7 @@ class GraphScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  sensor!.mac,
+                  widget.sensor!.mac,
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.white.withOpacity(0.65),
@@ -84,8 +117,8 @@ class GraphScreen extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
-              'En direct',
+            child: Text(
+              widget.sensor!.isLive ? 'En direct' : 'Hors ligne',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -107,7 +140,7 @@ class GraphScreen extends StatelessWidget {
         children: [
           StateRowCard(),
           SizedBox(height: 10),
-          PeriodGraph(sensor: sensor),
+          PeriodGraph(sensor: widget.sensor),
           if (homeController.access.value!.temperature == 1)
             SizedBox(height: 12),
           if (homeController.access.value!.temperature == 1)
