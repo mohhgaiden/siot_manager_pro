@@ -8,8 +8,10 @@ class Endpoints {
   static const sensors = '/Android/Data_Space_Tags_Readings.php';
 
   // chart
-  static const chartTag = '/Android/Data_Tags_Graph.php';
-  static const chartAll = '/Android/Data_Space_Graph.php';
+  static const chartTag1 = '/Android/Data_Tags_Graph_Date.php';
+  static const chartTag2 = '/Android/Data_Tags_Graph_Week.php';
+  static const chartAll1 = '/Android/Data_Space_Graph_Date.php';
+  static const chartAll2 = '/Android/Data_Space_Graph_Week.php';
 
   // history
   static const listTags = '/Android/list_Tags.php';

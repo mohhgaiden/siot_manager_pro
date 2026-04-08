@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:siot_manager_pro/models/sensors.dart';
+import 'package:siot_manager_pro/screens/graph/graph_screen.dart';
 import '../controller/alert.dart';
 import '../models/alert.dart';
 import '../theme/app_theme.dart';
@@ -171,62 +173,85 @@ class AlertsScreen extends StatelessWidget {
       return Icons.info_outline;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  a.name,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${DateFormat('dd-MM-yyyy HH:mm').format(a.dateTime)} · ${a.tagName}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppTheme.textMuted,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap:
+          () => Get.to(
+            GraphScreen(
+              sensor: SensorModel(
+                mac: a.macAdrs,
+                name: a.name,
+                type: '',
+                temperature: a.temperature,
+                humidity: a.humidity,
+                illumination: 0,
+                pression: 0,
+                voltage: 0,
+                amperage: 0,
+                level: 0,
+                latitude: 0,
+                longitude: 0,
+                dateTime: DateTime.now(),
+                isLive: true,
+              ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.border),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(getIcon(a), size: 16, color: color),
-                  const SizedBox(width: 4),
                   Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: color,
+                    a.name,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${DateFormat('dd-MM-yyyy HH:mm').format(a.dateTime)} · ${a.tagName}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppTheme.textMuted,
                     ),
                   ),
                 ],
               ),
-              // 🔥 NEW (min/max interval)
-              Text(
-                '($interval)',
-                style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
-              ),
-            ],
-          ),
-        ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    Icon(getIcon(a), size: 16, color: color),
+                    const SizedBox(width: 4),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+                // 🔥 NEW (min/max interval)
+                Text(
+                  '($interval)',
+                  style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

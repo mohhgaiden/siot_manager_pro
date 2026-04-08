@@ -10,41 +10,44 @@ class StateRowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => GridView.count(
-        shrinkWrap: true,
-        crossAxisCount: 4,
-        crossAxisSpacing: 6,
-        mainAxisSpacing: 6,
-        childAspectRatio: 0.85,
-        physics: const NeverScrollableScrollPhysics(),
+      () => Row(
+        spacing: 6,
         children: [
           if (homeController.access.value!.temperature == 1)
-            _buildState(
-              value: '${chartController.avgTemp.value.toStringAsFixed(0)}°',
-              label: 'Température',
-              icon: Icons.thermostat,
-              color: AppTheme.primary,
+            Expanded(
+              child: _buildState(
+                value: '${chartController.avgTemp.value.toStringAsFixed(0)}°',
+                label: 'Température',
+                icon: Icons.thermostat,
+                color: AppTheme.primary,
+              ),
             ),
           if (homeController.access.value!.humidity == 1)
-            _buildState(
-              value: '${chartController.avgHum.value.toStringAsFixed(0)}%',
-              label: 'Humidité',
-              icon: Icons.water_drop_outlined,
-              color: AppTheme.blue,
+            Expanded(
+              child: _buildState(
+                value: '${chartController.avgHum.value.toStringAsFixed(0)}%',
+                label: 'Humidité',
+                icon: Icons.water_drop_outlined,
+                color: AppTheme.blue,
+              ),
             ),
           if (homeController.access.value!.illumination == 1)
-            _buildState(
-              value: chartController.avgLux.value.toStringAsFixed(2),
-              label: 'Luminosité',
-              icon: Icons.wb_sunny_outlined,
-              color: AppTheme.amber,
+            Expanded(
+              child: _buildState(
+                value: chartController.avgLux.value.toStringAsFixed(2),
+                label: 'Luminosité',
+                icon: Icons.wb_sunny_outlined,
+                color: AppTheme.amber,
+              ),
             ),
           if (homeController.access.value!.pression == 1)
-            _buildState(
-              value: chartController.avgCo2.value.toStringAsFixed(2),
-              label: 'Pression',
-              icon: Icons.air,
-              color: AppTheme.green,
+            Expanded(
+              child: _buildState(
+                value: chartController.avgCo2.value.toStringAsFixed(2),
+                label: 'Pression',
+                icon: Icons.air,
+                color: AppTheme.green,
+              ),
             ),
         ],
       ),
@@ -58,6 +61,7 @@ class StateRowCard extends StatelessWidget {
     Color? color,
   }) {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(12),

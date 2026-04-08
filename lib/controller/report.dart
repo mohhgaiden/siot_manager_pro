@@ -14,7 +14,8 @@ class ReportController extends GetxController {
   final RxList<ReportModel> reports = <ReportModel>[].obs;
 
   // ─── Stats ─────────────────────────────────────────────────────────────
-  final RxInt mesures = 0.obs, alerts = 0.obs, tags = 0.obs, uptime = 0.obs;
+  final RxInt mesures = 0.obs, alerts = 0.obs, tags = 0.obs;
+  final RxString uptime = DateTime.now().toString().obs;
 
   void setMouth(int year, mouth) {
     selectedYear.value = year;
@@ -60,7 +61,7 @@ class ReportController extends GetxController {
         mesures.value = 0;
         alerts.value = 0;
         tags.value = 0;
-        uptime.value = 0;
+        uptime.value = DateTime.now().toString();
 
         return;
       }
@@ -78,7 +79,7 @@ class ReportController extends GetxController {
         mesures.value = 0;
         alerts.value = 0;
         tags.value = 0;
-        uptime.value = 0;
+        uptime.value = DateTime.now().toString();
 
         return;
       }
@@ -95,7 +96,7 @@ class ReportController extends GetxController {
         mesures.value = result["total_mesures"] ?? 0;
         alerts.value = result["nb_alertes"] ?? 0;
         tags.value = result["actif_tags"] ?? 0;
-        uptime.value = result["uptime"] ?? 0;
+        uptime.value = result["uptime"] ?? DateTime.now().toString();
 
         return;
       }

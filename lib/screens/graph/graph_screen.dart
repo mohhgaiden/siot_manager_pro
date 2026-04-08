@@ -7,30 +7,8 @@ import '../../theme/app_theme.dart';
 import 'card/graph_card.dart';
 import 'card/period_graph.dart';
 import 'card/state_row.dart';
+import 'card/weekly_chart.dart';
 
-/*
-class GraphScreen extends StatelessWidget {
-  final SensorModel? sensor;
-  const GraphScreen({super.key, required this.sensor});
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => chartController.getChart(sensor?.mac),
-    );
-
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (sensor != null) _buildHeader(context),
-            Expanded(child: _buildContent()),
-          ],
-        ),
-      ),
-    );
-  }*/
 class GraphScreen extends StatefulWidget {
   final SensorModel? sensor;
 
@@ -44,8 +22,6 @@ class _GraphScreenState extends State<GraphScreen> {
   @override
   void initState() {
     super.initState();
-
-    // ✅ CALL ONLY ONCE
     chartController.getChart(widget.sensor?.mac);
   }
 
@@ -139,6 +115,68 @@ class _GraphScreenState extends State<GraphScreen> {
         padding: const EdgeInsets.all(14),
         children: [
           StateRowCard(),
+          const SizedBox(height: 10),
+          PeriodGraph(sensor: widget.sensor),
+          const SizedBox(height: 12),
+
+          // ✅ Period 1 = weekly grouped bar chart
+          if (chartController.periodIndex.value == 1)
+            WeeklyBarChart()
+          // ✅ Period 0 or 2 = normal line charts
+          else ...[
+            if (homeController.access.value!.temperature == 1) ...[
+              const SizedBox(height: 12),
+              GraphCard(
+                title: 'Température',
+                color: AppTheme.primary,
+                unit: '°C',
+                currentValue: chartController.avgTemp.value.toStringAsFixed(1),
+                spots: chartController.tempSpots,
+              ),
+            ],
+            if (homeController.access.value!.humidity == 1) ...[
+              const SizedBox(height: 12),
+              GraphCard(
+                title: 'Humidité',
+                color: AppTheme.blue,
+                unit: '%',
+                currentValue: chartController.avgHum.value.toStringAsFixed(1),
+                spots: chartController.humSpots,
+              ),
+            ],
+            if (homeController.access.value!.illumination == 1) ...[
+              const SizedBox(height: 12),
+              GraphCard(
+                title: 'Luminosité',
+                color: AppTheme.amber,
+                unit: ' lx',
+                currentValue: chartController.avgLux.value.toStringAsFixed(2),
+                spots: chartController.luxSpots,
+                isBar: true,
+              ),
+            ],
+            if (homeController.access.value!.pression == 1) ...[
+              const SizedBox(height: 12),
+              GraphCard(
+                title: 'Pression',
+                color: AppTheme.green,
+                unit: ' hPa',
+                currentValue: chartController.avgCo2.value.toStringAsFixed(0),
+                spots: chartController.co2Spots,
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  /*Widget _buildContent() {
+    return Obx(
+      () => ListView(
+        padding: const EdgeInsets.all(14),
+        children: [
+          StateRowCard(),
           SizedBox(height: 10),
           PeriodGraph(sensor: widget.sensor),
           if (homeController.access.value!.temperature == 1)
@@ -150,8 +188,6 @@ class _GraphScreenState extends State<GraphScreen> {
               unit: '°C',
               currentValue: chartController.avgTemp.value.toStringAsFixed(1),
               spots: chartController.tempSpots,
-              minY: -20,
-              maxY: 60,
             ),
           if (homeController.access.value!.humidity == 1)
             const SizedBox(height: 12),
@@ -162,8 +198,6 @@ class _GraphScreenState extends State<GraphScreen> {
               unit: '%',
               currentValue: chartController.avgHum.value.toStringAsFixed(1),
               spots: chartController.humSpots,
-              minY: 20,
-              maxY: 80,
             ),
           if (homeController.access.value!.illumination == 1)
             const SizedBox(height: 12),
@@ -174,8 +208,6 @@ class _GraphScreenState extends State<GraphScreen> {
               unit: ' lx',
               currentValue: chartController.avgLux.value.toStringAsFixed(2),
               spots: chartController.luxSpots,
-              minY: 0,
-              maxY: 1000,
               isBar: true,
             ),
           if (homeController.access.value!.pression == 1)
@@ -187,11 +219,9 @@ class _GraphScreenState extends State<GraphScreen> {
               unit: ' hPa',
               currentValue: chartController.avgCo2.value.toStringAsFixed(0),
               spots: chartController.co2Spots,
-              minY: -10,
-              maxY: 150,
             ),
         ],
       ),
     );
-  }
+  }*/
 }

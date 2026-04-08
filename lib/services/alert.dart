@@ -18,6 +18,7 @@ class AlertService {
         endpoint = Endpoints.alertHum;
     }
     final response = await apiService.post('$endpoint?page=$page', data);
+    print(response.body);
     return apiService.handleResponse(response);
   }
 }

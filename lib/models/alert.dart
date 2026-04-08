@@ -1,6 +1,7 @@
 class AlertModel {
   final String spaceName;
   final String tagName;
+  final String macAdrs;
   final String name;
   final DateTime dateTime;
   final int min;
@@ -12,6 +13,7 @@ class AlertModel {
   AlertModel({
     required this.spaceName,
     required this.tagName,
+    required this.macAdrs,
     required this.name,
     required this.dateTime,
     required this.min,
@@ -25,6 +27,7 @@ class AlertModel {
     return AlertModel(
       spaceName: json['space_name'] ?? '',
       tagName: json['tag_name'] ?? '',
+      macAdrs: json['MacAddrs'] ?? '',
       name: json['name_alrt'] ?? '',
       dateTime: _parseDate(json['alrt_date_hr']),
       min: json['alrt_val_min'] ?? 0,

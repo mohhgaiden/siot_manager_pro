@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -402,7 +401,7 @@ class ReportScreen extends StatelessWidget {
           ),
           _statCard(
             'Dernière maj',
-            DateFormat('HH:mm').format(DateTime.now()),
+            reportController.uptime.value.split(' ').last.substring(0, 5),
             AppTheme.blue,
             Icons.access_time,
           ),
@@ -581,8 +580,8 @@ class ReportScreen extends StatelessWidget {
                       reportController.tags.value.toStringAsFixed(0),
                     ),
                     _pdfStat(
-                      'Uptime',
-                      '${reportController.uptime.value.toStringAsFixed(1)}%',
+                      'Dernière maj',
+                      reportController.uptime.value.split(' ').last,
                     ),
                   ],
                 ),

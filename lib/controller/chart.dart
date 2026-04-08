@@ -5,12 +5,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:siot_manager_pro/controller/home.dart';
 import 'package:siot_manager_pro/services/chart.dart';
 import '../../models/sensors.dart';
+import '../models/day.dart';
 
 class ChartController extends GetxController {
   // ─── State ────────────────────────────────────────────────────────────────
   final RxBool isLoading = false.obs;
   final RxInt periodIndex = 0.obs;
   final RxList<SensorModel> raw = <SensorModel>[].obs;
+  final RxList<DayGraphModel> weeklyData = <DayGraphModel>[].obs;
 
   // ─── Chart spots ──────────────────────────────────────────────────────────
   final RxList<FlSpot> tempSpots = <FlSpot>[].obs;
@@ -25,8 +27,7 @@ class ChartController extends GetxController {
   final RxDouble avgCo2 = 0.0.obs;
 
   // ─── Period map ───────────────────────────────────────────────────────────
-  static const _periodDays = [1, 7, 30];
-  static const periods = ['Jour', 'Semaine', 'Mois']; //['24h', '7j', '30j'];
+  static const periods = ["Aujourd'hui", 'Semaine', '']; //['24h', '7j', '30j'];
 
   // ─── User ─────────────────────────────────────────────────────────────────
   String get _uuid =>
@@ -36,6 +37,15 @@ class ChartController extends GetxController {
 
   void changePeriod(int index, String? mac) {
     periodIndex.value = index;
+    getChart(mac);
+  }
+
+  var date = <DateTime?>[].obs;
+  void onDate(List<DateTime?>? input, String? mac) {
+    date.clear();
+    if (input == null || input.isEmpty) return;
+    date.value = input;
+    periodIndex.value = 2;
     getChart(mac);
   }
 
@@ -49,8 +59,11 @@ class ChartController extends GetxController {
         response = await chartService.chartTags({
           'uuid_manager': _uuid,
           'MacAddrs': mac,
-          'nb_days': _periodDays[periodIndex.value].toString(),
-        });
+          if (periodIndex.value == 0)
+            'search_date': '${DateTime.now()}'.split(' ').first,
+          if (periodIndex.value == 2)
+            'search_date': '${date.last}'.split(' ').first,
+        }, type: periodIndex.value);
       } else {
         response = await chartService.chartAll({
           'uuid_manager': _uuid,
@@ -60,11 +73,13 @@ class ChartController extends GetxController {
                     (e) => e.spaceName == homeController.selectedSpace.value,
                   )
                   .spaceUuid,
-          'nb_days': _periodDays[periodIndex.value].toString(),
-        });
+          if (periodIndex.value == 0)
+            'search_date': '${DateTime.now()}'.split(' ').first,
+          if (periodIndex.value == 2)
+            'search_date': '${date.last}'.split(' ').first,
+        }, type: periodIndex.value);
       }
 
-      // 🔥 unify source
       final data =
           mac != null
               ? response['DATA_TAGS_GRAPH']
@@ -72,23 +87,30 @@ class ChartController extends GetxController {
 
       final list = data?['LIST'];
 
-      // ✅ SAFE CHECK
       if (list == null || list is! List || list.isEmpty) {
-        print("⚠️ Chart LIST is empty");
-
         raw.clear();
-        _clearSpots(); // 🔥 important (see below)
-
+        weeklyData.clear(); // ✅ clear weekly too
+        _clearSpots();
         return;
       }
 
-      // ✅ parse safely
+      // ✅ Period 1 = weekly grouped bar chart
+      if (periodIndex.value == 1) {
+        weeklyData.assignAll(
+          (list).map((e) => DayGraphModel.fromJson(e)).toList(),
+        );
+        raw.clear();
+        _clearSpots();
+        return;
+      }
+
+      // Period 0 or 2 = normal line/bar chart
+      weeklyData.clear();
       final fetched =
-          list.map((e) => SensorModel.fromJson(e)).toList()
+          (list).map((e) => SensorModel.fromJson(e)).toList()
             ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
 
       raw.assignAll(fetched);
-
       _buildSpots();
     });
   }
