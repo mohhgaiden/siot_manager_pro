@@ -88,6 +88,14 @@ class StateRowCard extends StatelessWidget {
             ),
           ),
           Text(
+            'Moy.',
+            style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.w600,
+              color: color.withOpacity(0.7),
+            ),
+          ),
+          Text(
             label!,
             style: const TextStyle(fontSize: 9, color: AppTheme.textMuted),
           ),

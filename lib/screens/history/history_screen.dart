@@ -17,7 +17,7 @@ class HistoryScreen extends StatelessWidget {
   static final _dateFmt = DateFormat('dd-MM-yyyy');
   static final _timeFmt = DateFormat('HH:mm:ss');
 
-  static const _periods = ['Jour', 'Semaine' /*, 'Mois'*/];
+  static const _periods = ['Jour', 'Semaine', 'Mois'];
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +191,7 @@ class HistoryScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Entrer le délai',
-                  suffixText: 'sec',
+                  suffixText: 'minutes',
                   filled: true,
                   fillColor: Colors.grey.shade100,
                   contentPadding: const EdgeInsets.symmetric(
@@ -277,80 +277,76 @@ class HistoryScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       child: Obx(
         () => Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Row(
-                children: List.generate(_periods.length, (i) {
-                  final active = historyController.periodIndex.value == i;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () => historyController.changePeriod(i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: EdgeInsets.only(
-                          right: i < _periods.length - 1 ? 8 : 0,
+          children: List.generate(_periods.length, (i) {
+            final active = historyController.periodIndex.value == i;
+            print(active.toString());
+            return Expanded(
+              child: GestureDetector(
+                onTap: () async {
+                  if (i == 2) {
+                    var results = await showCalendarDatePicker2Dialog(
+                      context: ctx,
+                      config: CalendarDatePicker2WithActionButtonsConfig(
+                        calendarType: CalendarDatePicker2Type.range,
+                        firstDate: DateTime.now().subtract(Duration(days: 30)),
+                        lastDate: DateTime.now(),
+                        selectedDayHighlightColor: AppTheme.primary,
+                        daySplashColor: AppTheme.primary.withValues(alpha: 0),
+                        okButton: Text(
+                          'Enregistrer',
+                          style: TextStyle(color: AppTheme.primary),
                         ),
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color:
-                              active
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          _periods[i],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                        cancelButton: Text('Annuler'),
+                      ),
+                      dialogSize: const Size(300, 300),
+                      value: historyController.range,
+                      borderRadius: BorderRadius.circular(16),
+                    );
+                    if (results != null) {
+                      historyController.onDate(results);
+                    }
+                  } else {
+                    historyController.changePeriod(i);
+                  }
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: EdgeInsets.only(
+                    right: i < _periods.length - 1 ? 8 : 0,
+                  ),
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color:
+                        active ? Colors.white : Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child:
+                      i == 2
+                          ? Icon(
+                            Icons.calendar_today_outlined,
                             color:
                                 active
                                     ? AppTheme.primary
                                     : Colors.white.withOpacity(0.8),
+                            size: 18,
+                          )
+                          : Text(
+                            _periods[i],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color:
+                                  active
+                                      ? AppTheme.primary
+                                      : Colors.white.withOpacity(0.8),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              flex: 1,
-              child: AppIconButton(
-                onTap: () async {
-                  var results = await showCalendarDatePicker2Dialog(
-                    context: ctx,
-                    config: CalendarDatePicker2WithActionButtonsConfig(
-                      calendarType: CalendarDatePicker2Type.range,
-                      firstDate: DateTime.now().subtract(Duration(days: 30)),
-                      lastDate: DateTime.now(),
-                      selectedDayHighlightColor: AppTheme.primary,
-                      daySplashColor: AppTheme.primary.withValues(alpha: 0),
-                      okButton: Text(
-                        'Enregistrer',
-                        style: TextStyle(color: AppTheme.primary),
-                      ),
-                      cancelButton: Text('Annuler'),
-                    ),
-                    dialogSize: const Size(300, 300),
-                    value: historyController.range,
-                    borderRadius: BorderRadius.circular(16),
-                  );
-                  if (results != null) historyController.onDate(results);
-                },
-                icon: const Icon(
-                  Icons.calendar_today_outlined,
-                  color: Colors.white,
-                  size: 18,
                 ),
               ),
-            ),
-          ],
+            );
+          }),
         ),
       ),
     );
