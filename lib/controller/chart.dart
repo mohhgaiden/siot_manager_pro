@@ -27,7 +27,7 @@ class ChartController extends GetxController {
   final RxDouble avgCo2 = 0.0.obs;
 
   // ─── Period map ───────────────────────────────────────────────────────────
-  static const periods = ["Aujourd'hui", 'Semaine', '']; //['24h', '7j', '30j'];
+  static const periods = ["Jour", 'Semaine', '']; //['24h', '7j', '30j'];
 
   // ─── User ─────────────────────────────────────────────────────────────────
   String get _uuid =>

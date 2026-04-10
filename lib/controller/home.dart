@@ -41,12 +41,6 @@ class HomeController extends GetxController {
     getAccess();
   }
 
-  @override
-  void onClose() {
-    search.value.dispose();
-    super.onClose();
-  }
-
   // ─── Actions ──────────────────────────────────────────────────────────────
 
   void toggleView(bool listView) => isListView.value = listView;

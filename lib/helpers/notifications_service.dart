@@ -3,9 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:siot_manager_pro/controller/home.dart';
-
-// 👉 IMPORT YOUR SCREEN
+import '../controller/home.dart';
 import '../models/sensors.dart';
 import '../screens/graph/graph_screen.dart';
 
@@ -13,7 +11,6 @@ import '../screens/graph/graph_screen.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-
   await NotificationsService.instance.setupFlutterNotifications();
   await NotificationsService.instance.showNotification(message);
 }
@@ -38,9 +35,8 @@ class NotificationsService {
 
   // ─────────────────────────────────────────
 
-  Future<void> requestPermission() async {
-    await messaging.requestPermission(alert: true, badge: true, sound: true);
-  }
+  Future<void> requestPermission() async =>
+      await messaging.requestPermission(alert: true, badge: true, sound: true);
 
   // ─────────────────────────────────────────
 
@@ -68,16 +64,8 @@ class NotificationsService {
     await localNotifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        print("🟡 LOCAL CLICK");
-        print("📦 PAYLOAD: ${details.payload}");
-
         if (details.payload != null && details.payload!.isNotEmpty) {
-          final data = jsonDecode(details.payload!);
-
-          // 🔥 Important delay (context ready)
-          Future.delayed(const Duration(milliseconds: 300), () {
-            _handleNavigation(data);
-          });
+          _handleNavigation(jsonDecode(details.payload!));
         }
       },
     );
@@ -88,17 +76,10 @@ class NotificationsService {
   // ─────────────────────────────────────────
 
   Future<void> showNotification(RemoteMessage message) async {
-    final notification = message.notification;
-
-    final title =
-        message.data['sensor_name'] ?? notification?.title ?? 'Sensor';
-
-    final body = notification?.body ?? message.data['body'] ?? '';
-
     await localNotifications.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
+      DateTime.now().millisecondsSinceEpoch & 0x7FFFFFFF,
+      message.notification?.title ?? message.data['title'],
+      message.notification?.body ?? message.data['body'],
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'high_importance_channel',
@@ -116,29 +97,16 @@ class NotificationsService {
 
   Future<void> setupMessageHandlers() async {
     /// 🟢 FOREGROUND
-    FirebaseMessaging.onMessage.listen((message) {
-      print("🟢 FOREGROUND");
-      print("📦 ${message.data}");
-
-      showNotification(message);
-    });
+    FirebaseMessaging.onMessage.listen((message) => showNotification(message));
 
     /// 🟡 CLICK FROM BACKGROUND
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("🟡 BACKGROUND CLICK");
-      print("📦 ${message.data}");
-
-      _handleNavigation(message.data);
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) => _handleNavigation(message.data),
+    );
 
     /// 🔵 CLICK FROM TERMINATED
     final initialMessage = await messaging.getInitialMessage();
-    if (initialMessage != null) {
-      print("🔵 TERMINATED CLICK");
-      print("📦 ${initialMessage.data}");
-
-      _handleNavigation(initialMessage.data);
-    }
+    if (initialMessage != null) _handleNavigation(initialMessage.data);
   }
 
   // ─────────────────────────────────────────
@@ -148,6 +116,11 @@ class NotificationsService {
     final tagId = data['TAG_ID'];
 
     if (tagId != null) {
+      Get.back();
+      if (homeController.sensors.isEmpty ||
+          homeController.sensors.where((e) => e.mac == tagId).isEmpty) {
+        homeController.getAccess();
+      }
       Future.delayed(const Duration(milliseconds: 300), () {
         Get.to(
           () => GraphScreen(
@@ -170,8 +143,6 @@ class NotificationsService {
           ),
         );
       });
-
-      homeController.getAccess();
     }
   }
 }
