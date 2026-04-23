@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String baseUrl =
-      "https://admin.sirius-iot.eu/Mobile/API/SiotManager2026";
+      "https://sirius-iot.app/Admin/Mobile/API/SiotManager2026";
   // --- JSON Requests ---
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) {
     return _sendRequest('POST', endpoint, body: body);
