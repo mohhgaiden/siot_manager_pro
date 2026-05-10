@@ -1,42 +1,86 @@
 class ReportModel {
   final String week;
-  final DateTime startDate;
-  final DateTime endDate;
+  final String startDate;
+  final String endDate;
 
-  // ─── Temperature ─────────────────────────────
   final double avgTemperature;
   final double maxTemperature;
   final double minTemperature;
 
-  // ─── Humidity ───────────────────────────────
   final double avgHumidity;
   final double maxHumidity;
   final double minHumidity;
 
-  // ─── Illumination ───────────────────────────
   final double avgIllumination;
   final double maxIllumination;
   final double minIllumination;
 
-  // ─── Pressure ───────────────────────────────
   final double avgPressure;
   final double maxPressure;
   final double minPressure;
 
-  // ─── Voltage ────────────────────────────────
   final double avgVoltage;
   final double maxVoltage;
   final double minVoltage;
 
-  // ─── Amperage ───────────────────────────────
   final double avgAmperage;
   final double maxAmperage;
   final double minAmperage;
 
-  // ─── Level ──────────────────────────────────
   final double avgLevel;
   final double maxLevel;
   final double minLevel;
+
+  // ───────── TEMPERATURE ─────────
+  final DateTime? maxTempDateTime;
+  final String? maxTempTagName;
+
+  final DateTime? minTempDateTime;
+  final String? minTempTagName;
+
+  // ───────── HUMIDITY ─────────
+  final DateTime? maxHumdDateTime;
+  final String? maxHumdTagName;
+
+  final DateTime? minHumdDateTime;
+  final String? minHumdTagName;
+
+  // ───────── ILLUMINATION ─────────
+  final DateTime? maxIlluminationDateTime;
+  final String? maxIlluminationTagName;
+
+  final DateTime? minIlluminationDateTime;
+  final String? minIlluminationTagName;
+
+  // ───────── PRESSURE ─────────
+  final DateTime? maxPressionDateTime;
+  final String? maxPressionTagName;
+
+  final DateTime? minPressionDateTime;
+  final String? minPressionTagName;
+
+  // ───────── VOLTAGE ─────────
+  final DateTime? maxVoltageDateTime;
+  final String? maxVoltageTagName;
+
+  final DateTime? minVoltageDateTime;
+  final String? minVoltageTagName;
+
+  // ───────── AMPERAGE ─────────
+  final DateTime? maxAmperageDateTime;
+  final String? maxAmperageTagName;
+
+  final DateTime? minAmperageDateTime;
+  final String? minAmperageTagName;
+
+  // ───────── LEVEL ─────────
+  final DateTime? maxLevelDateTime;
+  final String? maxLevelTagName;
+
+  final DateTime? minLevelDateTime;
+  final String? minLevelTagName;
+
+  final String? spaceStkg;
 
   ReportModel({
     required this.week,
@@ -70,94 +114,140 @@ class ReportModel {
     required this.avgLevel,
     required this.maxLevel,
     required this.minLevel,
+
+    this.maxTempDateTime,
+    this.maxTempTagName,
+    this.minTempDateTime,
+    this.minTempTagName,
+
+    this.maxHumdDateTime,
+    this.maxHumdTagName,
+    this.minHumdDateTime,
+    this.minHumdTagName,
+
+    this.maxIlluminationDateTime,
+    this.maxIlluminationTagName,
+    this.minIlluminationDateTime,
+    this.minIlluminationTagName,
+
+    this.maxPressionDateTime,
+    this.maxPressionTagName,
+    this.minPressionDateTime,
+    this.minPressionTagName,
+
+    this.maxVoltageDateTime,
+    this.maxVoltageTagName,
+    this.minVoltageDateTime,
+    this.minVoltageTagName,
+
+    this.maxAmperageDateTime,
+    this.maxAmperageTagName,
+    this.minAmperageDateTime,
+    this.minAmperageTagName,
+
+    // LEVEL
+    this.maxLevelDateTime,
+    this.maxLevelTagName,
+    this.minLevelDateTime,
+    this.minLevelTagName,
+
+    this.spaceStkg,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
-    double parse(dynamic v) => (v ?? 0).toDouble();
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      return double.tryParse(value.toString()) ?? 0.0;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      return DateTime.tryParse(value.toString());
+    }
 
     return ReportModel(
-      week: json['week'] ?? '',
+      week: json["week"] ?? '',
+      startDate: json["start_date"] ?? '',
+      endDate: json["end_date"] ?? '',
 
-      startDate: DateTime.parse(json['start_date']),
-      endDate: DateTime.parse(json['end_date']),
+      avgTemperature: parseDouble(json["average_temperature"]),
+      maxTemperature: parseDouble(json["max_temperature"]),
+      minTemperature: parseDouble(json["min_temperature"]),
 
-      // ─── Temperature
-      avgTemperature: parse(json['average_temperature']),
-      maxTemperature: parse(json['max_temperature']),
-      minTemperature: parse(json['min_temperature']),
+      avgHumidity: parseDouble(json["average_humidity"]),
+      maxHumidity: parseDouble(json["max_humidity"]),
+      minHumidity: parseDouble(json["min_humidity"]),
 
-      // ─── Humidity
-      avgHumidity: parse(json['average_humidity']),
-      maxHumidity: parse(json['max_humidity']),
-      minHumidity: parse(json['min_humidity']),
+      avgIllumination: parseDouble(json["average_illumination"]),
+      maxIllumination: parseDouble(json["max_illumination"]),
+      minIllumination: parseDouble(json["min_illumination"]),
 
-      // ─── Illumination
-      avgIllumination: parse(json['average_illumination']),
-      maxIllumination: parse(json['max_illumination']),
-      minIllumination: parse(json['min_illumination']),
+      avgPressure: parseDouble(json["average_pression"]),
+      maxPressure: parseDouble(json["max_pression"]),
+      minPressure: parseDouble(json["min_pression"]),
 
-      // ─── Pressure
-      avgPressure: parse(json['average_pression']),
-      maxPressure: parse(json['max_pression']),
-      minPressure: parse(json['min_pression']),
+      avgVoltage: parseDouble(json["average_voltage"]),
+      maxVoltage: parseDouble(json["max_voltage"]),
+      minVoltage: parseDouble(json["min_voltage"]),
 
-      // ─── Voltage
-      avgVoltage: parse(json['average_voltage']),
-      maxVoltage: parse(json['max_voltage']),
-      minVoltage: parse(json['min_voltage']),
+      avgAmperage: parseDouble(json["average_amperage"]),
+      maxAmperage: parseDouble(json["max_amperage"]),
+      minAmperage: parseDouble(json["min_amperage"]),
 
-      // ─── Amperage
-      avgAmperage: parse(json['average_amperage']),
-      maxAmperage: parse(json['max_amperage']),
-      minAmperage: parse(json['min_amperage']),
+      avgLevel: parseDouble(json["average_level"]),
+      maxLevel: parseDouble(json["max_level"]),
+      minLevel: parseDouble(json["min_level"]),
 
-      // ─── Level
-      avgLevel: parse(json['average_level']),
-      maxLevel: parse(json['max_level']),
-      minLevel: parse(json['min_level']),
+      // ───────── TEMPERATURE ─────────
+      maxTempDateTime: parseDate(json["max_temp_datetime"]),
+      maxTempTagName: json["max_temp_tag_name"],
+
+      minTempDateTime: parseDate(json["min_temp_datetime"]),
+      minTempTagName: json["min_temp_tag_name"],
+
+      // ───────── HUMIDITY ─────────
+      maxHumdDateTime: parseDate(json["max_humd_datetime"]),
+      maxHumdTagName: json["max_humd_tag_name"],
+
+      minHumdDateTime: parseDate(json["min_humd_datetime"]),
+      minHumdTagName: json["min_humd_tag_name"],
+
+      // ───────── ILLUMINATION ─────────
+      maxIlluminationDateTime: parseDate(json["max_illumination_datetime"]),
+      maxIlluminationTagName: json["max_illumination_tag_name"],
+
+      minIlluminationDateTime: parseDate(json["min_illumination_datetime"]),
+      minIlluminationTagName: json["min_illumination_tag_name"],
+
+      // ───────── PRESSURE ─────────
+      maxPressionDateTime: parseDate(json["max_pression_datetime"]),
+      maxPressionTagName: json["max_pression_tag_name"],
+
+      minPressionDateTime: parseDate(json["min_pression_datetime"]),
+      minPressionTagName: json["min_pression_tag_name"],
+
+      // ───────── VOLTAGE ─────────
+      maxVoltageDateTime: parseDate(json["max_voltage_datetime"]),
+      maxVoltageTagName: json["max_voltage_tag_name"],
+
+      minVoltageDateTime: parseDate(json["min_voltage_datetime"]),
+      minVoltageTagName: json["min_voltage_tag_name"],
+
+      // ───────── AMPERAGE ─────────
+      maxAmperageDateTime: parseDate(json["max_amperage_datetime"]),
+      maxAmperageTagName: json["max_amperage_tag_name"],
+
+      minAmperageDateTime: parseDate(json["min_amperage_datetime"]),
+      minAmperageTagName: json["min_amperage_tag_name"],
+
+      // ───────── LEVEL ─────────
+      maxLevelDateTime: parseDate(json["max_level_datetime"]),
+      maxLevelTagName: json["max_level_tag_name"],
+
+      minLevelDateTime: parseDate(json["min_level_datetime"]),
+      minLevelTagName: json["min_level_tag_name"],
+
+      spaceStkg: json["space_stkg"],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'week': week,
-      'start_date': startDate.toIso8601String(),
-      'end_date': endDate.toIso8601String(),
-
-      // Temperature
-      'average_temperature': avgTemperature,
-      'max_temperature': maxTemperature,
-      'min_temperature': minTemperature,
-
-      // Humidity
-      'average_humidity': avgHumidity,
-      'max_humidity': maxHumidity,
-      'min_humidity': minHumidity,
-
-      // Illumination
-      'average_illumination': avgIllumination,
-      'max_illumination': maxIllumination,
-      'min_illumination': minIllumination,
-
-      // Pressure
-      'average_pression': avgPressure,
-      'max_pression': maxPressure,
-      'min_pression': minPressure,
-
-      // Voltage
-      'average_voltage': avgVoltage,
-      'max_voltage': maxVoltage,
-      'min_voltage': minVoltage,
-
-      // Amperage
-      'average_amperage': avgAmperage,
-      'max_amperage': maxAmperage,
-      'min_amperage': minAmperage,
-
-      // Level
-      'average_level': avgLevel,
-      'max_level': maxLevel,
-      'min_level': minLevel,
-    };
   }
 }
